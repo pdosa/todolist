@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100">
+    <form id="login-form" class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-4">Login</h2>
+        <label class="block mb-2">Email</label>
+        <input type="email" id="email" class="border border-gray-300 p-2 mb-4 w-full" required>
+        
+        <label class="block mb-2">Password</label>
+        <input type="password" id="password" class="border border-gray-300 p-2 mb-4 w-full" required>
+        
+        <button type="submit" class="bg-blue-500 text-white p-2 rounded">Login</button>
+    </form>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const formData = new FormData();
+            formData.append('username', email);
+            formData.append('password', password);
+
+            const response = await fetch('/token', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('access_token', data.access_token);
+                window.location.href = "/task.html";
+            } else {
+                alert('Login failed. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

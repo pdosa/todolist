@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <h1 class="text-3xl font-bold mb-6">Welcome to Your Dashboard</h1>
+
+    <form id="todo-form" class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-4">Add Todo</h2>
+        <label class="block mb-2">Title</label>
+        <input type="text" id="title" class="border border-gray-300 p-2 mb-4 w-full" required>
+        
+        <label class="block mb-2">Description</label>
+        <textarea id="description" class="border border-gray-300 p-2 mb-4 w-full" required></textarea>
+        
+        <button type="submit" class="bg-blue-500 text-white p-2 rounded">Add Todo</button>
+    </form>
+
+    <script>
+        document.getElementById('todo-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const token = localStorage.getItem('access_token');
+
+            const response = await fetch('/todos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ title, description })
+            });
+
+            if (response.ok) {
+                alert('Todo added successfully!');
+            } else {
+                alert('Failed to add todo.');
+            }
+        });
+    </script>
+</body>
+</html>

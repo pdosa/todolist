@@ -1,74 +1,244 @@
-Une application de TODO LIST est un outil de productivité qui permet aux utilisateurs de suivre et gérer leurs tâches, activités ou objectifs à accomplir. Voici une description complète d'une application TODO LIST typique :
+Voici une documentation complète pour votre application FastAPI, qui inclut l'inscription, la connexion et la gestion des tâches.
 
-Fonctionnalités principales :
-Création de tâches :
+---
 
-L'utilisateur peut ajouter de nouvelles tâches en entrant un titre, une description et, si nécessaire, des détails supplémentaires comme une date limite, une heure, une priorité ou une catégorie.
-Les tâches peuvent être classées par type ou projet pour mieux organiser les listes.
-Édition et modification des tâches :
+# Documentation de l'Application FastAPI
 
-L'utilisateur peut modifier les tâches existantes en changeant les détails comme le titre, la description, la date d'échéance, ou la priorité.
-Il est possible d'ajouter des sous-tâches pour diviser les tâches complexes en étapes plus gérables.
-Gestion des priorités :
+## Introduction
 
-L'application permet de définir des priorités pour chaque tâche (par exemple, haute, moyenne, basse) afin que l'utilisateur puisse se concentrer sur les tâches les plus importantes.
-Dates d’échéance et rappels :
+Cette application FastAPI permet aux utilisateurs de s'inscrire, de se connecter et de gérer leurs tâches (todos). Elle utilise JSON pour stocker les données des utilisateurs et des tâches, ainsi que JWT pour l'authentification.
 
-Les tâches peuvent être assignées à des dates spécifiques, avec la possibilité de définir des rappels pour notifier l'utilisateur lorsque l’échéance approche.
-Des rappels multiples (par exemple, un jour avant, une heure avant) peuvent être configurés.
-Suivi de l'état des tâches :
+### Fonctionnalités Principales
 
-Les tâches peuvent être marquées comme "en cours", "complète", ou "en attente", offrant ainsi un suivi visuel de l'avancement.
-Une fonctionnalité de progression en pourcentage pourrait aussi être ajoutée pour des tâches plus longues.
-Liste de tâches organisée :
+- Inscription d'utilisateurs avec un hachage de mot de passe sécurisé.
+- Connexion via OAuth2 avec JWT pour l'authentification.
+- Gestion des tâches pour les utilisateurs connectés (ajout de nouvelles tâches).
+- Persistance des données des utilisateurs et des tâches dans un fichier JSON.
 
-L'application présente les tâches sous forme de listes, souvent divisées par catégories (travail, personnel, projet spécifique) ou par priorités.
-Il peut y avoir des options de filtre ou de tri (par date d'échéance, priorité, etc.) pour aider l'utilisateur à mieux gérer sa liste.
-Fonctionnalités collaboratives :
+## Technologies Utilisées
 
-Les utilisateurs peuvent partager des listes de tâches avec d'autres personnes, par exemple, pour des projets d'équipe.
-Il est possible d'assigner des tâches spécifiques à d'autres utilisateurs et de suivre leurs progrès.
-Notifications et alertes :
+- **Backend :** FastAPI
+- **Base de données :** Fichier JSON (`db.json`)
+- **Sécurité :** OAuth2 avec JWT
+- **Gestion des mots de passe :** Hachage avec `passlib`
+- **Frontend :** HTML, CSS, et JS servis par FastAPI
+- **Serveur de fichiers statiques :** `StaticFiles` de FastAPI
 
-L'application envoie des notifications pour rappeler les échéances, les tâches à venir ou lorsque des tâches sont attribuées par d'autres utilisateurs (en mode collaboratif).
-Interface utilisateur (UI) :
+---
 
-L'application présente une interface intuitive et réactive, souvent avec une vue d'ensemble claire de toutes les tâches.
-Elle peut avoir une version dark mode pour une utilisation plus confortable la nuit.
-Synchronisation multi-appareils :
+## Configuration de l'Environnement
 
-L'application synchronise automatiquement les tâches sur plusieurs appareils, permettant à l'utilisateur d'accéder à sa liste de tâches depuis son ordinateur, smartphone, ou tablette.
-Statistiques et historique :
+### Pré-requis
 
-L'utilisateur peut consulter des statistiques sur son efficacité, comme le nombre de tâches terminées dans une semaine, ou un historique des tâches complétées.
-Widget et intégrations :
+- Python 3.8 ou supérieur
+- PIP (Python Package Manager)
 
-L'application peut offrir des widgets pour un accès rapide aux tâches sur l’écran d’accueil d’un smartphone.
-Elle peut aussi s'intégrer avec d'autres outils comme les calendriers, les applications de messagerie, ou les assistants vocaux (Google Assistant, Siri).
+### Installation des Dépendances
 
+1. Clonez ou téléchargez ce projet.
+2. Naviguez dans le répertoire du projet et installez les dépendances avec la commande suivante :
 
-Frontend (HTML, CSS, Tailwind) :
-Structure des pages :
+```bash
+pip install fastapi[all] passlib[bcrypt] python-jose
+```
 
-Une page principale avec une interface simple et claire qui présente la liste des tâches.
-Des boutons pour ajouter une nouvelle tâche, éditer ou supprimer des tâches existantes.
-Utilise Tailwind CSS pour rapidement styliser des composants comme les boutons, les cartes de tâches, et les formulaires.
-Formulaires interactifs :
+### Structure du Projet
 
-Un formulaire pour ajouter/modifier des tâches avec des champs pour le titre, la description, la date d'échéance, et la priorité.
-Utilise des classes Tailwind pour rendre le formulaire responsive et esthétiquement agréable.
-Backend (FastAPI) :
-Endpoints RESTful :
+```bash
+.
+├── main.py                     # Fichier principal de l'application FastAPI
+├── db.json                     # Fichier JSON simulant la base de données
+├── vues/                       # Dossier contenant les fichiers HTML
+│   ├── register.html
+│   ├── login.html
+│   ├── dashboard.html
+├── static/                     # Dossier contenant les fichiers statiques (CSS, JS, images)
+└── README.md                   # Documentation du projet
+```
 
-POST /tasks : Ajouter une nouvelle tâche. Les données de la tâche seront envoyées par le frontend sous forme de JSON.
-GET /tasks : Récupérer toutes les tâches.
-PUT /tasks/{task_id} : Modifier une tâche existante.
-DELETE /tasks/{task_id} : Supprimer une tâche.
-Gestion des données :
+---
 
-Les données des tâches seront stockées dans un fichier JSON qui fait office de base de données simple.
-Utilise les méthodes json de Python pour lire et écrire dans ce fichier à chaque interaction utilisateur.
-FastAPI Features :
+## API Endpoints
 
-Grâce à FastAPI, tu peux bénéficier d'une documentation interactive (Swagger UI) automatiquement générée pour tester tes endpoints.
-Utilise les validateurs de pydantic pour valider les entrées utilisateur et sécuriser les données envoyées à ton backend.
+### 1. Inscription d'un Utilisateur
+
+- **URL :** `/register`
+- **Méthode :** `POST`
+- **Description :** Inscrit un nouvel utilisateur dans l'application.
+- **Requête :**
+  - **Corps de la requête (JSON)** :
+    ```json
+    {
+      "name": "Nom de l'utilisateur",
+      "email": "email@example.com",
+      "password": "password123"
+    }
+    ```
+- **Réponse :**
+  - **Réponse réussie (200 OK)** :
+    ```json
+    {
+      "id": 1,
+      "name": "Nom de l'utilisateur",
+      "email": "email@example.com",
+      "hashed_password": "$2b$12$hashedpasswordstring",
+      "todos": []
+    }
+    ```
+  - **Erreurs possibles :**
+    - **400 Bad Request :** Email déjà enregistré
+
+### 2. Connexion (Obtenir un Jeton JWT)
+
+- **URL :** `/token`
+- **Méthode :** `POST`
+- **Description :** Authentifie l'utilisateur et retourne un jeton JWT.
+- **Requête :**
+  - **Corps de la requête (Formulaire)** :
+    - `username`: Email de l'utilisateur
+    - `password`: Mot de passe de l'utilisateur
+- **Réponse :**
+  - **Réponse réussie (200 OK)** :
+    ```json
+    {
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "token_type": "bearer"
+    }
+    ```
+  - **Erreurs possibles :**
+    - **400 Bad Request :** Email ou mot de passe incorrect
+
+### 3. Ajouter une Tâche
+
+- **URL :** `/todos`
+- **Méthode :** `POST`
+- **Description :** Ajoute une nouvelle tâche pour l'utilisateur connecté.
+- **Authentification :** Requiert un jeton JWT (OAuth2).
+- **Requête :**
+  - **Paramètres de la requête (Formulaire)** :
+    - `title`: Titre de la tâche
+    - `description`: Description de la tâche
+- **Réponse :**
+  - **Réponse réussie (200 OK)** :
+    ```json
+    {
+      "msg": "Todo added",
+      "todo": {
+        "id": 1,
+        "title": "Ma Tâche",
+        "description": "Détails de la tâche",
+        "start": "2024-08-19",
+        "end": "2024-08-24",
+        "priority": "high"
+      }
+    }
+    ```
+  - **Erreurs possibles :**
+    - **401 Unauthorized :** Jeton JWT invalide ou expiré
+
+---
+
+## Gestion des Fichiers Statique et HTML
+
+### Fichiers HTML
+
+L'application sert trois fichiers HTML principaux :
+
+1. **Page d'inscription :** `/register`
+2. **Page de connexion :** `/login`
+3. **Tableau de bord (ajout de tâches) :** `/dashboard`
+
+Ces fichiers sont situés dans le dossier `vues/` et peuvent être accédés via les routes appropriées dans FastAPI.
+
+### Fichiers CSS et JS
+
+Les fichiers statiques (CSS, JS) doivent être placés dans le dossier `static/`. Vous pouvez référencer ces fichiers dans vos fichiers HTML en utilisant des chemins relatifs comme suit :
+
+```html
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/app.js"></script>
+```
+
+---
+
+## Authentification et Sécurité
+
+### Gestion des Mots de Passe
+
+Les mots de passe des utilisateurs sont sécurisés à l'aide de l'algorithme de hachage bcrypt via la bibliothèque `passlib`.
+
+### JWT (JSON Web Tokens)
+
+L'application utilise JWT pour l'authentification des utilisateurs. Les jetons sont générés lors de la connexion et doivent être envoyés avec chaque requête authentifiée (comme l'ajout de tâches).
+
+**Utilisation du Jeton JWT :**
+
+- Après une connexion réussie, le jeton JWT doit être inclus dans l'en-tête `Authorization` sous la forme `Bearer <token>` pour les requêtes nécessitant une authentification.
+
+### Durée du Jeton
+
+Les jetons JWT expirent après 30 minutes, mais cette durée peut être modifiée en ajustant la variable `ACCESS_TOKEN_EXPIRE_MINUTES`.
+
+---
+
+## Gestion de la Base de Données
+
+### Fichier JSON (`db.json`)
+
+Les utilisateurs et les tâches sont stockés dans un fichier JSON nommé `db.json`. Ce fichier agit comme une base de données pour cette application simple.
+
+- Lorsqu'un nouvel utilisateur s'inscrit, ses informations (y compris son mot de passe haché) sont ajoutées au fichier.
+- Lorsque l'utilisateur ajoute des tâches, celles-ci sont également ajoutées au fichier JSON sous l'utilisateur correspondant.
+
+### Format de la Base de Données
+
+Voici un exemple de contenu du fichier `db.json` :
+
+```json
+[
+    {
+        "id": 1,
+        "name": "Nom de l'utilisateur",
+        "email": "email@example.com",
+        "hashed_password": "$2b$12$hashedpasswordstring",
+        "todos": [
+            {
+                "id": 1,
+                "title": "Ma Tâche",
+                "description": "Détails de la tâche",
+                "start": "2024-08-19",
+                "end": "2024-08-24",
+                "priority": "high"
+            }
+        ]
+    }
+]
+```
+
+---
+
+## Déploiement
+
+### Lancer l'application en local
+
+Pour lancer l'application en local, exécutez la commande suivante dans le terminal :
+
+```bash
+uvicorn main:app --reload
+```
+
+L'application sera accessible à l'adresse : `http://127.0.0.1:8000`.
+
+### Déploiement sur un Serveur
+
+Pour déployer cette application sur un serveur, vous pouvez utiliser un gestionnaire de processus comme **Gunicorn** avec Uvicorn en tant que worker. Par exemple :
+
+```bash
+gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app
+```
+
+---
+
+## Conclusion
+
+Cette application FastAPI est une solution simple pour gérer l'inscription des utilisateurs, la connexion, et la gestion des tâches avec un fichier JSON en tant que base de données. Elle est extensible et peut être intégrée à une base de données plus robuste (comme PostgreSQL ou MySQL) si nécessaire.

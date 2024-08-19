@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "name": "moi",
+        "email": "user@example.com",
+        "hashed_password": "$2b$12$kIgDWM/5UjwUwnERnHLR8OY.qVJsvGDecD6J6u6P.OQey5Jw4I28K",
+        "todos": []
+    },
+    {
+        "id": 2,
+        "name": "moi",
+        "email": "user1@example.com",
+        "hashed_password": "$2b$12$7uJNe28aHKwO2ITDUjI8de.JeYVZpardolKoPOKSlemJd1PT8ptpO",
+        "todos": []
+    },
+    {
+        "id": 3,
+        "name": "Martini Tatchou",
+        "email": "martinitatchou2@gmail.com",
+        "hashed_password": "$2b$12$Ddy9vFTf3NhHXAjODM4CqO2WL.XxKQQVZv95whj0L1vYEGs/b2/Qa",
+        "todos": []
+    }
+]
