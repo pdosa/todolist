@@ -14,5 +14,21 @@
                 "priority": "high"
             }
         ]
+    },
+    {
+        "id": 2,
+        "name": "dimitri",
+        "email": "dimdevpdo@gmail.com",
+        "hashed_password": "$2b$12$...",
+        "todos": [
+            {
+                "id": 1,
+                "title": "TODOLISTAPP",
+                "description": "DO AND TODO",
+                "start": "2024-08-16",
+                "end": "2024-08-20",
+                "priority": "null"
+            }
+        ]
     }
 ]
