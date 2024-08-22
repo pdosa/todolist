@@ -19,5 +19,12 @@
         "email": "martinitatchou2@gmail.com",
         "hashed_password": "$2b$12$Ddy9vFTf3NhHXAjODM4CqO2WL.XxKQQVZv95whj0L1vYEGs/b2/Qa",
         "todos": []
+    },
+    {
+        "id": 4,
+        "name": "freddy",
+        "email": "gamofreddy@gmail.com",
+        "hashed_password": "$2b$12$568wO41N.Svmf8lS.xc4H.LMlahEBqUkBRO3ccmtqh5j9bK63KYAO",
+        "todos": []
     }
 ]

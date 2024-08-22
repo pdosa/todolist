@@ -174,3 +174,7 @@ def add_todo(title: str, description: str, token: str = Depends(oauth2_scheme)):
     write_db(db)
     
     return {"msg": "Todo added", "todo": todo}
+
+if __name__=="__main__":
+    import uvicorn
+    uvicorn.run(app)
