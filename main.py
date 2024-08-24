@@ -10,6 +10,8 @@ import datetime
 import json
 from pathlib import Path
 
+from model import UserCreate, User, Token
+
 # Password hashing utility
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -42,22 +44,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 DATABASE_PATH = Path("db.json")
 
 
-# Models
-class User(BaseModel):
-    id: int
-    name: str
-    email: EmailStr
-    hashed_password: str
-    todos: List[dict] = []
 
-class UserCreate(BaseModel):
-    name: str
-    email: EmailStr
-    password: str
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
 
 
 # Helper Functions to handle database I/O
@@ -117,6 +104,7 @@ def register_user(user: UserCreate):
     return new_user
 
 
+
 @app.post("/token", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends()):
     db = read_db()
@@ -139,7 +127,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.post("/todos")
+@app.post("/todos",status_code=status.HTTP_201_CREATED)
 def add_todo(title: str, description: str, token: str = Depends(oauth2_scheme)):
     db = read_db()
 
@@ -148,8 +136,7 @@ def add_todo(title: str, description: str, token: str = Depends(oauth2_scheme)):
         email: str = payload.get("sub")
     except JWTError:
         raise HTTPException(status_code=401, detail="Could not validate credentials")
-
-    # Find the user by email
+    print(email)
     user = None
     for db_user in db:
         if db_user["email"] == email:
@@ -172,9 +159,12 @@ def add_todo(title: str, description: str, token: str = Depends(oauth2_scheme)):
 
     # Save the updated database
     write_db(db)
-    
+
     return {"msg": "Todo added", "todo": todo}
+
+    
+
 
 if __name__=="__main__":
     import uvicorn
-    uvicorn.run(app)
+    uvicorn.run("main:app",host="127.0.0.1",port=8000,reload=True)

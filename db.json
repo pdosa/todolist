@@ -25,6 +25,8 @@
         "name": "freddy",
         "email": "gamofreddy@gmail.com",
         "hashed_password": "$2b$12$568wO41N.Svmf8lS.xc4H.LMlahEBqUkBRO3ccmtqh5j9bK63KYAO",
-        "todos": []
+        "todos": [
+
+        ]
     }
 ]
