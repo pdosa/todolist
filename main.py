@@ -162,7 +162,7 @@ def add_todo(title: str, description: str, token: str = Depends(oauth2_scheme)):
 
     return {"msg": "Todo added", "todo": todo}
 
-    
+
 
 
 if __name__=="__main__":
