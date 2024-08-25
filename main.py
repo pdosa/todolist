@@ -33,6 +33,14 @@ def serve_login():
 def serve_dashboard():
     return FileResponse("vues/task.html")
 
+@app.get("/todos/{user_id}")
+async def serve_todos(user_id: int):
+    for user in read_db(): 
+        if user["id"] == user_id:
+            return {"todos": user["todos"] }
+    else:
+        # Using first user's data as fallback response if id not found
+        return {"todos": read_db()[0]["todos"] }
 
 # Token Utility
 SECRET_KEY = "myjwtsecret"

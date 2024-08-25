@@ -8,41 +8,125 @@
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
     <h1 class="text-3xl font-bold mb-6">Welcome to Your Dashboard</h1>
-
-    <form id="todo-form" class="bg-white p-6 rounded-lg shadow-lg">
-        <h2 class="text-2xl font-bold mb-4">Add Todo</h2>
-        <label class="block mb-2">Title</label>
-        <input type="text" id="title" class="border border-gray-300 p-2 mb-4 w-full" required>
-        
-        <label class="block mb-2">Description</label>
-        <textarea id="description" class="border border-gray-300 p-2 mb-4 w-full" required></textarea>
-        
-        <button type="submit" class="bg-blue-500 text-white p-2 rounded">Add Todo</button>
-    </form>
-
-    <script>
-        document.getElementById('todo-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
+    <dialog id="newTodoModal">
+        <form id="todo-form" class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-4">Add Todo</h2>
+            <label class="block mb-2">Title</label>
+            <input type="text" id="title" class="border border-gray-300 p-2 mb-4 w-full" required>
             
-            const title = document.getElementById('title').value;
-            const description = document.getElementById('description').value;
-            const token = localStorage.getItem('access_token');
+            <label class="block mb-2">Description</label>
+            <textarea id="description" class="border border-gray-300 p-2 mb-4 w-full" required></textarea>
+            
+            <button type="submit" class="bg-blue-500 text-white p-2 rounded">Add Todo</button>
+            <button type="button" class="ml-2 bg-red-500 text-white p-2 rounded" onclick="newTodoModal.close()">Close</button>
+        </form>
+    </dialog>
+    <dialog id="editTodoModal">
+        <form id="todo-edit-form" class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-4">Edit Todo</h2>
+            Code edit form here
+            
+            <button type="submit" class="bg-blue-500 text-white p-2 rounded">Confirm</button>
+            <button type="button" class="ml-2 bg-red-500 text-white p-2 rounded" onclick="editTodoModal.close()">Close</button>
+        </form>
+    </dialog>
+    <button class="bg-blue-500 text-white p-3 mb-2 ml-1 self-start rounded" type="button" onclick="newTodoModal.show()">Create task</button>
+    <table id="todo-list" class="px-3 mx-auto w-full *:text-center">
+        <tr>
+            <th class="text-white bg-blue-500 border border-t border-b"">id</th>
+            <th class="text-white bg-blue-500 border border-t border-b"">title</th>
+            <th class="text-white bg-blue-500 border border-t border-b"">Description</th>
+            <th class="text-white bg-blue-500 border border-t border-b"">Start</th>
+            <th class="text-white bg-blue-500 border border-t border-b"">End</th>
+            <th class="text-white bg-blue-500 border border-t border-b"">Priority</th>
+            <th class="text-white bg-blue-500 border border-t border-b"">Actions</th>
+        </tr>
+    </table>
 
-            const response = await fetch('/todos', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ title, description })
-            });
+<script defer>
+    getTodos();
 
-            if (response.ok) {
-                alert('Todo added successfully!');
-            } else {
-                alert('Failed to add todo.');
-            }
+    async function editTodo(id) { 
+        // ...
+    }
+    
+    async function deleteTodo(id) { 
+        // ...
+    }
+
+    document.getElementById('todo-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
+        const token = localStorage.getItem('access_token');
+
+        const response = await fetch('/todos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ title, description })
         });
-    </script>
+
+        if (response.ok) {
+            alert('Todo added successfully!');
+        } else {
+            alert('Failed to add todo.');
+        }
+    });
+
+    async function getTodos(filterParams) {
+        const response = await fetch('/todos/0');
+        const { todos } = await response.json();
+        let todoList = document.getElementById("todo-list");
+        const createActionBtns = (id) => { 
+            const actionBtns = document.createElement('div');
+            actionBtns.setAttribute('class', 'flex justify-center *:px-2 *:py-1 *:mx-1 *:rounded-sm *:text-white')
+            actionBtns.innerHTML = `
+                <div class="bg-green-500 hover:bg-green-700">
+                    <button class="editBtns" type="button" value="${id}">Edit</button>
+                </div>
+                <div class="bg-red-500 hover:bg-red-700">
+                    <button class="delBtns" type="button" value="${id}">Delete</button>
+                </div>
+            `;
+            return actionBtns;
+        }
+
+        todos.forEach(todo => {
+            const tr = document.createElement('tr');
+            tr.setAttribute('class', 'odd:bg-white even:bg-slate-50 h-fit *:py-2');
+            for (const key in todo) {
+                if (Object.prototype.hasOwnProperty.call(todo, key)) {
+                    let e = document.createElement('td');
+                    e.textContent = todo[key];
+                    tr.appendChild(e);
+                }
+            }
+            tr.appendChild(createActionBtns(todo.id));
+            todoList.appendChild(tr);
+        });
+        console.log({todos});
+
+        Array.from(document.getElementsByClassName('editBtns')).forEach(btn => 
+            btn.addEventListener('click', () => {
+                document.getElementById('editTodoModal').show();
+                const id = btn.value;
+                console.log(id);
+                editTodo(id);
+            }
+        ));
+
+        Array.from(document.getElementsByClassName('delBtns')).forEach(btn =>
+            btn.addEventListener('click', () => {
+                const id = btn.value;
+                console.log(id);
+                deleteTodo(id);
+            }
+        ));
+    }
+</script>
 </body>
 </html>
