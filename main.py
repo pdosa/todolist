@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, HTTPException, Depends, status, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, EmailStr
@@ -19,6 +19,11 @@ app = FastAPI()
 
 # Serve static files (HTML, CSS, JS)
 app.mount("/css", StaticFiles(directory="css"), name="css")
+
+# Classe pour représenter les données du token
+class TokenData(BaseModel):
+    email: str | None = None
+
 
 # Serve the HTML files from the "vues" directory
 @app.get("/register")
@@ -66,6 +71,26 @@ def write_db(data):
     with open(DATABASE_PATH, "w") as f:
         json.dump(data, f, indent=4)
 
+def get_user_by_email(email: str):
+    db = read_db()
+    for user in db:
+        if user["email"] == email:
+            return user
+    return None
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise HTTPException(status_code=401, detail="Could not validate credentials")
+        token_data = TokenData(email=email)
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Could not validate credentials")
+    user = get_user_by_email(email=token_data.email)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
 
 # Helper Functions for Password and Token Handling
 def hash_password(password: str):
@@ -134,42 +159,42 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     
     return {"access_token": access_token, "token_type": "bearer"}
 
-
-@app.post("/todos",status_code=status.HTTP_201_CREATED)
-def add_todo(title: str, description: str, token: str = Depends(oauth2_scheme)):
-    db = read_db()
-
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Could not validate credentials")
-    print(email)
-    user = None
-    for db_user in db:
-        if db_user["email"] == email:
-            user = db_user
-            break
-
+@app.post("/todos", status_code=status.HTTP_201_CREATED)
+def add_todo(
+    title: str = Form(...),
+    description: str = Form(...),
+    start: str = Form(...),
+    end: str = Form(...),
+    priority: str = Form(...),
+    token: str = Depends(oauth2_scheme)
+):
+    user = get_current_user(token)
+    
     if not user:
-        raise HTTPException(status_code=401, detail="User not found")
+        raise HTTPException(status_code=404, detail="User not found")
 
-    # Create a new todo and add it to the user's todos
+    # Create a new todo
     todo = {
         "id": len(user["todos"]) + 1,
         "title": title,
         "description": description,
-        "start": datetime.datetime.now().strftime("%Y-%m-%d"),
-        "end": (datetime.datetime.now() + datetime.timedelta(days=5)).strftime("%Y-%m-%d"),
-        "priority": "high"
+        "start": start,
+        "end": end,
+        "priority": priority
     }
+
+    # Add the todo to the user's todos
     user["todos"].append(todo)
 
     # Save the updated database
+    db = read_db()
+    for idx, db_user in enumerate(db):
+        if db_user["email"] == user["email"]:
+            db[idx] = user
+            break
     write_db(db)
 
     return {"msg": "Todo added......", "todo": todo}
-
 
 
 
