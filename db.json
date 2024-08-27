@@ -25,8 +25,46 @@
         "name": "freddy",
         "email": "gamofreddy@gmail.com",
         "hashed_password": "$2b$12$568wO41N.Svmf8lS.xc4H.LMlahEBqUkBRO3ccmtqh5j9bK63KYAO",
+        "todos": []
+    },
+    {
+        "id": 5,
+        "name": "PDOS MUSIC PLATFORM",
+        "email": "martinitatchou@gmail.com",
+        "hashed_password": "$2b$12$SmAwXCaQ99Y.JVYIFhdcqu.xy3g2skkq2Z.Q8BbPbHSU7E62acRKC",
         "todos": [
-
+            {
+                "id": 1,
+                "title": "title",
+                "description": "description",
+                "start": null,
+                "end": null,
+                "priority": "priority"
+            },
+            {
+                "id": 2,
+                "title": "title",
+                "description": "description",
+                "start": null,
+                "end": null,
+                "priority": "priority"
+            },
+            {
+                "id": 3,
+                "title": "title",
+                "description": "description",
+                "start": "start",
+                "end": "end",
+                "priority": "priority"
+            },
+            {
+                "id": 4,
+                "title": "finish todo",
+                "description": "do",
+                "start": "2024-08-27T12:26",
+                "end": "2024-08-28T12:26",
+                "priority": "Hight"
+            }
         ]
     }
 ]
