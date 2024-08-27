@@ -33,7 +33,24 @@
     <dialog id="editTodoModal">
         <form id="todo-edit-form" class="bg-white p-6 rounded-lg shadow-lg">
             <h2 class="text-2xl font-bold mb-4">Edit Todo</h2>
-            Code edit form here
+            <label class="block mb-2">Title</label>
+            <input type="text" id="title_edit" name="title" class="border border-gray-300 p-2 mb-4 w-full" required>
+
+            <label class="block mb-2">Description</label>
+            <textarea id="description_edit" name="description" class="border border-gray-300 p-2 mb-4 w-full"
+                      required></textarea>
+
+            <label class="block mb-2">Started Date</label>
+            <input type="datetime-local" id="start_edit" name="start" class="border border-gray-300 p-2 mb-4 w-full"
+                   required>
+
+            <label class="block mb-2">Ended Date</label>
+            <input type="datetime-local" id="end_edit" name="end" class="border border-gray-300 p-2 mb-4 w-full"
+                   required>
+
+            <label class="block mb-2">Priority</label>
+            <input type="text" id="priority_edit" name="priority" class="border border-gray-300 p-2 mb-4 w-full"
+                   required>
             
             <button type="submit" class="bg-blue-500 text-white p-2 rounded">Confirm</button>
             <button type="button" class="ml-2 bg-red-500 text-white p-2 rounded" onclick="editTodoModal.close()">Close</button>
@@ -42,25 +59,61 @@
     <button class="bg-blue-500 text-white p-3 mb-2 ml-1 self-start rounded" type="button" onclick="newTodoModal.show()">Create task</button>
     <table id="todo-list" class="px-3 mx-auto w-full *:text-center">
         <tr>
-            <th class="text-white bg-blue-500 border border-t border-b"">id</th>
-            <th class="text-white bg-blue-500 border border-t border-b"">title</th>
-            <th class="text-white bg-blue-500 border border-t border-b"">Description</th>
-            <th class="text-white bg-blue-500 border border-t border-b"">Start</th>
-            <th class="text-white bg-blue-500 border border-t border-b"">End</th>
-            <th class="text-white bg-blue-500 border border-t border-b"">Priority</th>
-            <th class="text-white bg-blue-500 border border-t border-b"">Actions</th>
+            <th class="text-white bg-blue-500 border border-t border-b">id</th>
+            <th class="text-white bg-blue-500 border border-t border-b">title</th>
+            <th class="text-white bg-blue-500 border border-t border-b">Description</th>
+            <th class="text-white bg-blue-500 border border-t border-b">Start</th>
+            <th class="text-white bg-blue-500 border border-t border-b">End</th>
+            <th class="text-white bg-blue-500 border border-t border-b">Priority</th>
+            <th class="text-white bg-blue-500 border border-t border-b">Actions</th>
         </tr>
     </table>
 
 <script defer>
     getTodos();
+    const form = document.getElementById('todo-edit-form');
+    const formData = new FormData(form);
+    const title_edit = document.getElementById('title_edit').value;
+    const description_edit = document.getElementById('description_edit').value;
+    const start_edit = document.getElementById("start_edit").value;
+    const end_edit = document.getElementById("end_edit").value;
+    const priority_edit = document.getElementById("priority_edit").value;
+    const token = localStorage.getItem('access_token');
 
-    async function editTodo(id) { 
-        // ...
+    async function editTodo(id) {
+
+        const response = await fetch(`/update/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+
+        if (response.ok) {
+            alert('Todo added successfully!');
+        } else {
+            const errorDetail = await response.json();
+            console.error(errorDetail);
+            alert(`Failed to add todo: ${errorDetail.detail}`);
+        }
     }
-    
-    async function deleteTodo(id) { 
-        // ...
+
+    async function deleteTodo(id) {
+        const response = await fetch(`/delete/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+
+        });
+        if (response.status === 202) {
+            alert("Task Delete .......")
+        } else {
+            const errorDetail = await response.json();
+            console.error(errorDetail);
+            alert(`Failed to delete task: ${errorDetail.detail}`);
+        }
     }
 
     document.getElementById('todo-form').addEventListener('submit', async (e) => {
@@ -93,7 +146,7 @@
     });
 
     async function getTodos(filterParams) {
-        const response = await fetch('/todos/0');
+        const response = await fetch('/todos/4');
         const { todos } = await response.json();
         let todoList = document.getElementById("todo-list");
         const createActionBtns = (id) => { 
@@ -125,7 +178,7 @@
         });
         console.log({todos});
 
-        Array.from(document.getElementsByClassName('editBtns')).forEach(btn => 
+        Array.from(document.getElementsByClassName('editBtns')).forEach(btn =>
             btn.addEventListener('click', () => {
                 document.getElementById('editTodoModal').show();
                 const id = btn.value;

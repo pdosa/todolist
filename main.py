@@ -1,3 +1,5 @@
+from operator import indexOf
+
 from fastapi import FastAPI, HTTPException, Depends, status, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -9,8 +11,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import datetime
 import json
 from pathlib import Path
-
-from model import UserCreate, User, Token
+from model import UserCreate, User, Token, Task
 
 # Password hashing utility
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -26,15 +27,15 @@ class TokenData(BaseModel):
 
 
 # Serve the HTML files from the "vues" directory
-@app.get("/register")
+@app.get("/register.html")
 def serve_register():
     return FileResponse("vues/register.html")
 
-@app.get("/login")
+@app.get("/login.html")
 def serve_login():
     return FileResponse("vues/login.html")
 
-@app.get("/task")
+@app.get("/task.html")
 def serve_dashboard():
     return FileResponse("vues/task.html")
 
@@ -76,6 +77,12 @@ def get_user_by_email(email: str):
     for user in db:
         if user["email"] == email:
             return user
+    return None
+
+def find_element_db(index_element:int,table:list):
+    for index ,value in enumerate(table):
+        if index==index_element:
+            return value
     return None
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
@@ -195,8 +202,56 @@ def add_todo(
     write_db(db)
 
     return {"msg": "Todo added......", "todo": todo}
+@app.delete("/delete/{index_task}",status_code=status.HTTP_202_ACCEPTED)
+def delete_task(index_task:int,token: str = Depends(oauth2_scheme)):
+    data = read_db()
+    user = get_current_user(token)
 
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    todos = find_element_db(index_task - 1, user["todos"])
+    if todos==None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="task not found")
+    if len(user["todo"])==1:
+        user["todo"].clean()
+    else:
+        user["todos"].pop(index_task-1)
+    for idx, db_user in enumerate(data):
+        if db_user["email"] == user["email"]:
+            data[idx] = user
+            break
+    write_db(data)
+    return {"message...": "task delete"}
 
+@app.put("/update/{index_task}")
+def update_task(
+    index_task:int,
+    title: str = Form(...),
+    description: str = Form(...),
+    start: str = Form(...),
+    end: str = Form(...),
+    priority: str = Form(...),
+    token: str = Depends(oauth2_scheme)
+):
+    data=read_db()
+    user = get_current_user(token)
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    todos=find_element_db(index_task-1,user["todos"])
+    if todos==None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    todos["title"] = title
+    todos["description"] = description
+    todos["start"] = start
+    todos["end"] = end
+    todos["priority"] = priority
+    for idx, db_user in enumerate(data):
+        if db_user["email"] == user["email"]:
+            data[idx] = user
+            break
+    write_db(data)
+    return {"message...":"task update"}
 
 if __name__=="__main__":
     import uvicorn

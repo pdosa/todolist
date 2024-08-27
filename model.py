@@ -1,6 +1,8 @@
 # Models
+from datetime import datetime
 from typing import List
 
+from fastapi import Form
 from pydantic import BaseModel, EmailStr
 
 
@@ -22,3 +24,12 @@ class Token(BaseModel):
     
 class TokenData(BaseModel):
     email: str | None = None
+
+class Task(BaseModel):
+    id:int
+    title:str=Form(...)
+    description:str=Form(...)
+    start:str=Form(...)
+    end:str=Form(...)
+    priority:str=Form(...)
+

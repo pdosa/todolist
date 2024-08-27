@@ -25,7 +25,16 @@
         "name": "freddy",
         "email": "gamofreddy@gmail.com",
         "hashed_password": "$2b$12$568wO41N.Svmf8lS.xc4H.LMlahEBqUkBRO3ccmtqh5j9bK63KYAO",
-        "todos": []
+        "todos": [
+            {
+                "id": 2,
+                "title": "fgdfg",
+                "description": "gdfgdfg",
+                "start": "2024-08-10",
+                "end": "2024-8-11",
+                "priority": "priority"
+            }
+        ]
     },
     {
         "id": 5,
@@ -35,14 +44,6 @@
         "todos": [
             {
                 "id": 1,
-                "title": "title",
-                "description": "description",
-                "start": null,
-                "end": null,
-                "priority": "priority"
-            },
-            {
-                "id": 2,
                 "title": "title",
                 "description": "description",
                 "start": null,
